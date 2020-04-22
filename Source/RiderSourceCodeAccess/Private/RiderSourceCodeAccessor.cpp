@@ -6,9 +6,11 @@
 
 #include "Modules/ModuleManager.h"
 #include "Misc/App.h"
-#include "Misc/FileHelper.h"
+//#include "Misc/FileHelper.h"
+#include "CoreMisc.h"
 #include "Misc/Paths.h"
-#include "Misc/ScopeLock.h"
+//#include "Misc/ScopeLock.h"
+#include "ThreadingBase.h"
 #include "Misc/UProjectInfo.h"
 #include "HAL/PlatformTime.h"
 #include "DesktopPlatformModule.h"
@@ -68,10 +70,12 @@ bool FRiderSourceCodeAccessor::CanAccessSourceCode() const
 	return bHasRiderInstalled;
 }
 
+/*
 bool FRiderSourceCodeAccessor::DoesSolutionExist() const
 {
 	return !GetSolutionPath().IsEmpty();
 }
+*/
 
 FText FRiderSourceCodeAccessor::GetDescriptionText() const
 {
@@ -129,6 +133,7 @@ bool FRiderSourceCodeAccessor::OpenSolution()
 
 }
 
+/*
 bool FRiderSourceCodeAccessor::OpenSolutionAtPath(const FString& InSolutionPath)
 {
 	if (!bHasRiderInstalled) return false;
@@ -148,6 +153,7 @@ bool FRiderSourceCodeAccessor::OpenSolutionAtPath(const FString& InSolutionPath)
 	}
 	return true;
 }
+*/
 
 bool FRiderSourceCodeAccessor::OpenSourceFiles(const TArray<FString>& AbsoluteSourcePaths)
 {
@@ -225,7 +231,7 @@ FString FRiderSourceCodeAccessor::GetSolutionPath() const
 				{
 					MasterProjectName = "UE4";
 				}
-				CachedSolutionPath = FPaths::Combine(FPaths::RootDir(), MasterProjectName + TEXT(".sln"));
+				CachedSolutionPath = FPaths::Combine(*FPaths::RootDir(), *FString::Printf(TEXT("%s.sln"), *MasterProjectName));
 			}
 			else
 			{
@@ -237,8 +243,9 @@ FString FRiderSourceCodeAccessor::GetSolutionPath() const
 				}
 				else
 				{
-					const FString BaseName = FApp::HasProjectName() ? FApp::GetProjectName() : FPaths::GetBaseFilename(CachedSolutionPath);
-					CachedSolutionPath = FPaths::Combine(CachedSolutionPath, BaseName + TEXT(".sln"));
+					//const FString BaseName = FApp::HasProjectName() ? FApp::GetProjectName() : FPaths::GetBaseFilename(CachedSolutionPath);
+					const FString BaseName = FApp::GetProjectName();
+					CachedSolutionPath = FPaths::Combine(*CachedSolutionPath, *FString::Printf(TEXT("%s.sln"), *BaseName));
 				}
 			}
 		}

@@ -1,5 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
+#include "RiderSourceCodeAccessor.h"
 #include "RiderSourceCodeAccessorModule.h"
 
 #include "RiderPathLocator.h"

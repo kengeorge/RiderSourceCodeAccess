@@ -1,13 +1,20 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
+#include "../RiderSourceCodeAccessor.h"
 #include "RiderPathLocator.h"
 
 #include "GenericPlatform/GenericPlatformFile.h"
 #include "HAL/FileManager.h"
 #include "Internationalization/Regex.h"
-#include "Misc/FileHelper.h"
-#include "Misc/Paths.h"
+//#include "Misc/FileHelper.h"
+#include "CoreMisc.h"
+//#include "Misc/Paths.h"
+#include "Paths.h"
+#include "JsonTypes.h"
+#include "Dom/JsonValue.h"
 #include "Dom/JsonObject.h"
+#include "Policies/JsonPrintPolicy.h"
+#include "Serialization/JsonWriter.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 
@@ -32,7 +39,7 @@ namespace FRiderPathLocator
 
 		const FString ToolboxPath = ToolboxPathMatcher.GetCaptureGroup(1);
 		FString InstallPath = ToolboxPath;
-		const FString SettingJsonPath = FPaths::Combine(ToolboxPath, FString(".settings.json"));
+		const FString SettingJsonPath = FPaths::Combine(*ToolboxPath, TEXT(".settings.json"));
 		if (FPaths::FileExists(SettingJsonPath))
 		{
 			FString JsonStr;
@@ -53,7 +60,7 @@ namespace FRiderPathLocator
 		}
 		if(!FPaths::DirectoryExists(InstallPath)) return {};
 		
-		const FString ToolboxRiderRootPath = FPaths::Combine(InstallPath, FString("apps"));
+		const FString ToolboxRiderRootPath = FPaths::Combine(*InstallPath, TEXT("apps"));
 		if(!FPaths::DirectoryExists(ToolboxRiderRootPath)) return {};
 
 		TArray<FInstallInfo> RiderInstallInfos;
@@ -65,13 +72,13 @@ namespace FRiderPathLocator
 			if (!RiderPathMatcher.FindNext()) continue;
 
 			const FString RiderDir = RiderPathMatcher.GetCaptureGroup(1);
-			const FString RiderCppPluginPath = FPaths::Combine(RiderDir, TEXT("plugins\\rider-cpp"));
+			const FString RiderCppPluginPath = FPaths::Combine(*RiderDir, TEXT("plugins\\rider-cpp"));
 			if (FPaths::FileExists(RiderPath) && FPaths::DirectoryExists(RiderCppPluginPath))
 			{
 				FInstallInfo Info;
 				Info.Path = RiderPath;
 				Info.IsToolbox = true;
-				const FString ProductInfoJsonPath = FPaths::Combine(RiderDir, TEXT("product-info.json"));
+				const FString ProductInfoJsonPath = FPaths::Combine(*RiderDir, TEXT("product-info.json"));
 				if (FPaths::FileExists(ProductInfoJsonPath))
 				{
 					FString JsonStr;
@@ -180,8 +187,8 @@ namespace FRiderPathLocator
 						if (Value != TEXT("InstallLocation")) continue;
 						FString InstallLocation;
 						if (GetStringRegKey(SubKey, Value, InstallLocation) != ERROR_SUCCESS) continue;
-						const FString ExePath = FPaths::Combine(InstallLocation, TEXT("bin\\rider64.exe"));
-						const FString RiderCppPluginPath = FPaths::Combine(InstallLocation, TEXT("plugins\\rider-cpp"));
+						const FString ExePath = FPaths::Combine(*InstallLocation, TEXT("bin\\rider64.exe"));
+						const FString RiderCppPluginPath = FPaths::Combine(*InstallLocation, TEXT("plugins\\rider-cpp"));
 						if (FPaths::FileExists(ExePath) && FPaths::DirectoryExists(RiderCppPluginPath))
 						{
 							FInstallInfo Info;

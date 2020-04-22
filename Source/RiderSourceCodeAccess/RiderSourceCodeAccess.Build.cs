@@ -4,9 +4,15 @@ namespace UnrealBuildTool.Rules
 {
 	public class RiderSourceCodeAccess : ModuleRules
 	{
+	#if WITH_FORWARDED_MODULE_RULES_CTOR
         public RiderSourceCodeAccess(ReadOnlyTargetRules Target) : base(Target)
+    #else
+        public RiderSourceCodeAccess(TargetInfo Target)
+    #endif
         {
-	        PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+#if WITH_FORWARDED_MODULE_RULES_CTOR
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+#endif
 		    PrivateDependencyModuleNames.AddRange(
                 new []
                 {

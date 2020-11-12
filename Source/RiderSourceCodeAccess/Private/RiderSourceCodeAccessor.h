@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "Core.h"
 #include "ISourceCodeAccessor.h"
 
 namespace FRiderPathLocator
@@ -41,7 +42,7 @@ private:
 
 	/** Is Rider installed on this system? */
 	bool bHasRiderInstalled = false;
-	
+
 	/** The path to the Rider executable. */
 	FString ExecutablePath;
 
